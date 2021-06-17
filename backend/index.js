@@ -21,8 +21,6 @@ app.post("/api/contador", async (req, res) => {
         // Gravar o array novamente no ficheiro
         db.contador += 1
 
-        console.log(db.contador)
-
         await fs.writeFile(DB_CONTA , JSON.stringify(db, null, 2))
 
         // No final, enviar o estado 201

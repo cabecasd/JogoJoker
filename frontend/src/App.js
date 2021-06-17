@@ -1,12 +1,13 @@
 
 import './App.css';
-import Contador from "./componentes/Contador"
+import Joker from "./componentes/Joker"
+import Iniciar from "./componentes/Iniciar"
 
 function App() {
   return (
     <div className="App">
       <div>
-        <Contador />
+         <Iniciar />
       </div>
     </div>
   );

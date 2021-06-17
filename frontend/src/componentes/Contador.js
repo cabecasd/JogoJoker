@@ -15,10 +15,6 @@ class Contador extends React.Component {
         this.fetchContador()
         // this.intervalId = setInterval(this.fetchMessages, 2000)
     
-        this.ws.addEventListener('open',  () => {
-          this.ws.send('something');
-        });
-    
         this.ws.addEventListener('message', (event) => {
           if (event.data === 'update') {
             this.fetchContador()
@@ -32,8 +28,8 @@ class Contador extends React.Component {
 
         fetch('/api/contador', { method: 'POST' })
 
-            .then(() => this.fetchContador())
     }
+    
     fetchContador() {
         fetch('/api/contador', { method: 'GET' })
 
@@ -54,3 +50,13 @@ class Contador extends React.Component {
 }
 
 export default Contador
+
+
+/*
+
+1- clica botao
+2- api express vai incrementar em 1
+3- api express vai procurar o valor na base de dados e retornar
+4- this.setstate (contador: o valor retornado)
+
+*/
