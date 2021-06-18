@@ -1,21 +1,25 @@
 import React from "react";
 
 
-class Iniciar extends React.Component {
+export default class Jogo extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {  }
+        this.state = { 
+            pagina: "iniciar"
+         }
     }
-    render() { 
-        return (
-            <div className="pagina">
-                <section></section>
-                <section>
-                    <p>Iniciar Jogo</p>
-                </section>
-            </div>
-        );
-    }
+
+inicia({onStart}) {
+    return <button onClick={onStart}>Iniciar</button>
 }
- 
-export default Iniciar;
+    render() { 
+        if (this.state.pagina === "inciar") {
+            <Iniciar onStart={() => this.setState({pagina: 'outra'})} />
+        } else if ( this.state.pagina === "outra") {
+          
+        }
+
+    
+}
+
+}

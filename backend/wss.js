@@ -1,13 +1,13 @@
 //codigo webscokets
 
 import WebSocket from 'ws';
-import * as fs from "fs";
-
+import { watch }  from "fs";
+// as fs
 const wss = new WebSocket.Server({ port: 8081 });
 
 const clients = []
 
-fs.watch("contador.json", (data) => {
+watch("contador.json", () => {
     clients.forEach(ws => ws.send('update'))
 })
 

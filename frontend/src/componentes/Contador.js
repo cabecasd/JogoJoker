@@ -7,7 +7,11 @@ class Contador extends React.Component {
         this.state = {
             contador: 0,
         }
+
+
         this.ws = new WebSocket('ws://localhost:8081')
+
+
 
     } // fim do constructor
 
@@ -15,23 +19,32 @@ class Contador extends React.Component {
         this.fetchContador()
         // this.intervalId = setInterval(this.fetchMessages, 2000)
     
+
+        
         this.ws.addEventListener('message', (event) => {
           if (event.data === 'update') {
             this.fetchContador()
           }
+
+
 
         });
       }
 
     handleButtonClick() {
 
-
         fetch('/api/contador', { method: 'POST' })
 
     }
     
     fetchContador() {
+
+
+
         fetch('/api/contador', { method: 'GET' })
+
+
+
 
                 .then(response => response.json())
                 .then(json => this.setState({
@@ -44,6 +57,7 @@ class Contador extends React.Component {
             <div>
                 <p>{this.state.contador}</p>
                 <button onClick={() => this.handleButtonClick()}>Incrementa</button>
+                <input type="image" src="./logo192.png" name="submit" width="100" height="48" alt="submit"/>  
             </div>
         )
     }
