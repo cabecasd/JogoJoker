@@ -1,16 +1,16 @@
-
 import './App.css';
-import Joker from "./componentes/Joker"
-import Iniciar from "./componentes/Iniciar"
-import Contador from "./componentes/Contador"
+import PaginaInicial from "./app/components/PaginaInicial"
+import PaginaPerguntas from "./app/components/PaginaPerguntas"
+// import store from "./app/store"
+import { useSelector } from "react-redux";
 
 function App() {
-  
+  const appState = useSelector(state => state.appState)
+
+
   return (
     <div className="App">
-      <div>
-        <Jogo />
-      </div>
+      {appState === 0 ? <PaginaInicial /> : <PaginaPerguntas />}
     </div>
   );
 }

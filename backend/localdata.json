@@ -1,0 +1,18 @@
+{
+    "scores": {
+        "aScore": 0,
+        "bScore": 0
+    },
+    "question": {
+        "level": "",
+        "number": "",
+        "question": "",
+        "options": [
+            {"key": "a", "text": ""},
+            {"key": "b", "text": ""},
+            {"key": "c", "text": ""},
+            {"key": "d", "text": ""}
+        ],
+        "answer": "a"
+    }
+}

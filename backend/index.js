@@ -1,50 +1,154 @@
-//codigo expresssssss
 
-import express from "express";
+import express from 'express';
 import * as fs from "fs/promises"
 const app = express()
 const port = 3001
-const DB_EASY = "dbEasy.json"
-const DB_MEDIUM = "dbMedium.json"
-const DB_HARD = "dbHard.json"
-const DB_CONTA = "contador.json"
 
-app.use(express.json())
+const MEMORIA = "localdata.json"
+const EASY_QUESTIONS = "eQuestions.json"
+const MEDIUM_QUESTIONS = "mQuestions.json"
+const HARD_QUESTIONS = "hQuestions.json"
 
+app.post('/api/resposta', async (req, res) => {
 
-app.post("/api/contador", async (req, res) => {
     try {
-        // Ler o ficheiro para um array
-        const conteudo = await fs.readFile(DB_CONTA)
-        const db = JSON.parse(conteudo.toString())
+        //acede à informacao do jogo
+        const gameMemoryD = await fs.readFile(MEMORIA)
+        const gameMemory = JSON.parse(gameMemoryD.toString())
+        //acede a informacao das perguntas todas
+        const eQuestionsD = await fs.readFile(EASY_QUESTIONS)
+        const eQuestions = JSON.parse(eQuestionsD.toString())
+        const mQuestionsD = await fs.readFile(MEDIUM_QUESTIONS)
+        const mQuestions = JSON.parse(mQuestionsD.toString())
+        const hQuestionsD = await fs.readFile(HARD_QUESTIONS)
+        const hQuestions = JSON.parse(hQuestionsD.toString())
 
-        // Gravar o array novamente no ficheiro
-        db.contador += 1
+        //gerar a primeira pergunta
+        if (req.body.indice === 0) {
+            generateQuestion(req, eQuestions, mQuestions, hQuestions, gameMemory)
+            await fs.writeFile(MEMORIA, JSON.stringify(gameMemory, null, 2))
 
-        await fs.writeFile(DB_CONTA , JSON.stringify(db, null, 2))
+        }
+        //se estamos a responder a uma pergunta, verificar se esta certo e aplicar pontos
+        //antes de gerar a proxima pergunta
+        else if (req.body.indice > 0) {
+            checkIfRight(req)
+            generateQuestion(req, eQuestions, mQuestions, hQuestions, gameMemory)
+            await fs.writeFile(MEMORIA, JSON.stringify(gameMemory, null, 2))
+        }
 
-        // No final, enviar o estado 201
-        res.sendStatus(201)
-    } catch (err) {
-        res.status(500).send("Erro a adicionar a mensagem")
-    }
+        res.sendStatus(201).json({
+            "question": gameMemory.question.question,
+            "options": gameMemory.question.options
+        })
+    } catch (err) { 
+        res.status(500).send("Erro ao gerar/verificar pergunta") }
+
+
+
 })
 
-// Desktop/DesafioJoker/projeto/
+const generateQuestion = (req, eQuestions, mQuestions, hQuestions, gameMemory) => {
+    //gera pergunta facil
+    if (req.body.indice < 11) {
+        //gera um indice aleatorio de pergunta
+        const questionIndex = Math.ceil(Math.random() * eQuestions.questions.length)
+        //guarda na memoria do jogo a pergunta aleatoria
+        gameMemory.question = eQuestions.questions[questionIndex]
 
-
-app.get("/api/contador", async (req, res) => {
-    try {
-        // Ler o ficheiro para um array
-        const conteudo = await fs.readFile(DB_CONTA)
-        const db = JSON.parse(conteudo.toString())
-
-        // console.log(db.contador)
-
-        res.status(200).json({contador: db.contador})
-    } catch (err) {
-        res.status(500).send("Erro a ler as mensagens")
     }
+    //gera pergunta media
+    else if (req.body.indice < 21) {
+        //gera um indice aleatorio de pergunta
+        const questionIndex = Math.ceil(Math.random() * mQuestions.questions.length)
+        //guarda na memoria do jogo a pergunta aleatoria
+        gameMemory.question = mQuestions.questions[questionIndex]
+
+    }
+    //gera pergunta dificil
+    else if (req.body.indice > 20) {
+        //gera um indice aleatorio de pergunta
+        const questionIndex = Math.ceil(Math.random() * hQuestions.questions.length)
+        //guarda na memoria do jogo a pergunta aleatoria
+        gameMemory.question = hQuestions.questions[questionIndex]
+
+    }
+}
+
+function checkIfRight(req, gameMemory) {
+    //a resposta dada pelo utilizador
+    const gotAnswear = req.body.indice
+
+    //a resposta certa que estava em memoria
+    const rightAnswear = gameMemory.answer
+
+    //se a resposta estiver certa, adiciona 100 pontos
+    if (gotAnswear === rightAnswear) {
+        gameMemory.scores.aScore += 100
+    }
+    //se a resposta nao estava certa
+    else if (gotAnswear !== rightAnswear) {
+        //se tinha pelo menos 300 pontos, tira 300 pontos
+        if (gameMemory.scores.aScore >= 300) {
+            gameMemory.scores.aScore -= 300
+        }
+        //se tinha menos de 300 pontos, mete os pontos a 0, pontos nao podem ser negativos
+        if (gameMemory.scores.aScore < 300) {
+            gameMemory.scores.aScore = 0
+        }
+    }
+
+    
+}
+
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
 })
 
-app.listen(port, () => console.log(`Ready on ${port}`))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// [
+//     {
+//         "level": "easy",
+//         "number": 1,
+//         "question": "Qual o actor que interpretou a personagem Maui no filme Moana?",
+//         "options": [
+//             {"key": "a", "text": "Brad Pitt"},
+//             {"key": "b", "text": "Dwayne Johnson"},
+//             {"key": "c", "text": "Morgan Freeman"},
+//             {"key": "d", "text": "Adam Sandler"}
+//         ],
+//         "answer": "b"
+//     },
+//     {
+//         "level": "easy",
+//         "number": 2,
+//         "question": "Em que filme surge a frase 'Para o infinito e mais além'?",
+//         "options": [
+//             {"key": "a", "text": "Star Wars"},
+//             {"key": "b", "text": "Rei Leão"},
+//             {"key": "c", "text": "Toy Story"},
+//             {"key": "d", "text": "Chicken Little"}
+//         ],
+//         "answer": "c"
+//     }
+// ]
